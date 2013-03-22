@@ -47,7 +47,7 @@
 ///////////////////////////////////////////////////////////////////////////////////////////
 + (NSString *) queryForDatabase:(NSString*)path andTable:(NSString*)tableName
 {   
-    NSString *query = [NSString stringWithFormat:@"SELECT * FROM %@", tableName];
+    NSString *query = [NSString stringWithFormat:@"SELECT * FROM %@ LIMIT 10", tableName];
 
     NSTask *task;
     task = [[NSTask alloc] init];

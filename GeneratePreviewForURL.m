@@ -11,16 +11,16 @@
 OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview, CFURLRef url, CFStringRef contentTypeUTI, CFDictionaryRef options)
 {
 	NSAutoreleasePool* pool = [[NSAutoreleasePool alloc] init];
-
+	
 	CFStringRef fullPath = CFURLCopyFileSystemPath(url, kCFURLPOSIXPathStyle);
-
+	
     NSArray *tablesArr = [Functions getTables:(NSString *)fullPath];
-        
+	
 	NSMutableDictionary *props=[[[NSMutableDictionary alloc] init] autorelease];
     [props setObject:@"UTF-8" forKey:(NSString *)kQLPreviewPropertyTextEncodingNameKey];
     [props setObject:@"text/html" forKey:(NSString *)kQLPreviewPropertyMIMETypeKey];
 	[props setObject:[NSString stringWithFormat:@"Contents of %@", fullPath] forKey:(NSString *)kQLPreviewPropertyDisplayNameKey];
-	    
+	
     NSMutableString *html=[[[NSMutableString alloc] init] autorelease];
     [html appendString:@"<html>"];
     [html appendString:@"<style>"];
@@ -33,21 +33,22 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
     [html appendString:@"<body bgcolor=white>"];
     
     for (NSString *tableName in tablesArr){
-        if (![tableName isEqualToString:@""]){
-            
+        if ([tableName length] > 0){
+            NSLog(@"tableName: %@", tableName);
             [html appendString: @"<h1>"];
             [html appendString: tableName];
             [html appendString: @"</h1>"];
             
             NSString *tableHTML = [Functions queryForDatabase:(NSString *)fullPath andTable:tableName];
+            NSLog(@"tableHTML: %@", tableHTML);
             
-            if (![tableHTML isEqualToString:@""]){    
+            if ([tableHTML length] > 0){
                 [html appendString: @"<table border=1 cellspacing=0 cellpadding=5>"];
                 [html appendString:tableHTML];
                 [html appendString: @"</table>"];
             } else {
                 [html appendString: @"<p>No records found</p>"];
-            }            
+            }
         }
     }
     
@@ -57,7 +58,7 @@ OSStatus GeneratePreviewForURL(void *thisInterface, QLPreviewRequestRef preview,
 	
     [pool release];
     return noErr;
-
+	
 }
 
 void CancelPreviewGeneration(void* thisInterface, QLPreviewRequestRef preview)
